@@ -19,7 +19,7 @@ export class InMemoryCache implements ICacheController {
         return Promise.resolve();
     }
 
-    get<T>(name: string): Promise<T> {
+    get<T>(name: string): Promise<T | null> {
         const data = this.storage[name] != null ? this.storage[name].data : null;
         return Promise.resolve(data as T);
     }
