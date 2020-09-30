@@ -1,5 +1,5 @@
 {
-  "name": "in-memory",
+  "name": "@flex-cache/in-memory",
   "version": "1.0.0",
   "description": "In Memory cache adapter for the Flex Cache",
   "main": "dist/index.js",
