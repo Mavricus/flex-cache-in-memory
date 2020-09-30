@@ -1,0 +1,38 @@
+{
+  "name": "in-memory",
+  "version": "1.0.0",
+  "description": "In Memory cache adapter for the Flex Cache",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mavricus/flex-cache-in-memory.git"
+  },
+  "keywords": [
+    "cache",
+    "flexcache",
+    "inmemory"
+  ],
+  "files": [
+    "dist/**/*",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
+  "author": "Mavricus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mavricus/flex-cache-in-memory/issues"
+  },
+  "homepage": "https://github.com/Mavricus/flex-cache-in-memory#readme",
+  "dependencies": {
+    "@flex-cache/types": "^1.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.3"
+  }
+}

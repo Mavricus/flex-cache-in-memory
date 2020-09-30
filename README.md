@@ -1,2 +1,2 @@
 # flex-cache-in-memory
-In Memory Cache adaptor for the @flex-cache library
+In Memory Cache adapter for the @flex-cache library
