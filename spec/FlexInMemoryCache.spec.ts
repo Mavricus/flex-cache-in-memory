@@ -1,14 +1,14 @@
-import { InMemoryCache } from '../src/InMemoryCache';
+import { FlexInMemoryCache } from '../src/FlexInMemoryCache';
 
 jest.useFakeTimers();
 
 describe('InMemoryCache', () => {
-    let cache: InMemoryCache;
+    let cache: FlexInMemoryCache;
     let storage: { [key: string]: { timer: NodeJS.Timer; data: unknown } };
 
     beforeEach(() => {
         storage = {};
-        cache = new InMemoryCache(storage);
+        cache = new FlexInMemoryCache(storage);
     });
 
     afterEach(() => {

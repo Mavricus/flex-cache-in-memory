@@ -1,11 +1,11 @@
-import { ICacheController } from '@flex-cache/types';
+import { IFlexCache } from '@flex-cache/types';
 
 interface ICacheScope {
     timer?: NodeJS.Timer;
     data: unknown;
 }
 
-export class InMemoryCache implements ICacheController {
+export class FlexInMemoryCache implements IFlexCache {
     constructor(private storage: { [key: string]: ICacheScope }) {
     }
 
