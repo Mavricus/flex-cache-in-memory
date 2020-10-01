@@ -25,6 +25,9 @@ export class FlexInMemoryCache implements IFlexCache {
     }
 
     set<T>(name: string, data: T, ttl: number): Promise<void> {
+        if (ttl <= 0) {
+            return Promise.reject(new Error('TTL must be a positive number'));
+        }
         let newScope: ICacheScope = { data };
         if (ttl !== Infinity) {
             newScope.timer = setTimeout(() => this.delete(name), ttl);

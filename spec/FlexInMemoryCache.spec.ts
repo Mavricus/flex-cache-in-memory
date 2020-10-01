@@ -27,6 +27,14 @@ describe('InMemoryCache', () => {
                         .then(() => cache.set('a', 321, 5000))
                         .then(() => expect(storage['a'].data).toBe(321));
         });
+
+        it('should reject with error when TTL is negative',  () => {
+            return expect(cache.set('a', 123, -5000)).rejects.toThrowError();
+        });
+
+        it('should reject with error when TTL is 0',  () => {
+            return expect(cache.set('a', 123, 0)).rejects.toThrowError();
+        });
     });
 
     describe('delete', () => {
