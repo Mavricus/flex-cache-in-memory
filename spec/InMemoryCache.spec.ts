@@ -4,11 +4,15 @@ jest.useFakeTimers();
 
 describe('InMemoryCache', () => {
     let cache: InMemoryCache;
-    let storage: { [key: string]: { timere: NodeJS.Timer; data: unknown } };
+    let storage: { [key: string]: { timer: NodeJS.Timer; data: unknown } };
 
     beforeEach(() => {
         storage = {};
         cache = new InMemoryCache(storage);
+    });
+
+    afterEach(() => {
+        jest.runAllTimers();
     });
 
     describe('set', () => {
@@ -91,6 +95,13 @@ describe('InMemoryCache', () => {
                         .then(() => expect(cache.get('a')).resolves.toBe(456))
                         .then(() => jest.advanceTimersByTime(5000))
                         .then(() => expect(cache.get('a')).resolves.toBeNull());
+        });
+        it('should not delete cached data when ttl is Infinity', () => {
+            return cache.set('a', 123, Infinity)
+                        .then(() => cache.set('b', 456, 2500))
+                        .then(() => jest.runAllTimers())
+                        .then(() => expect(cache.get('a')).resolves.toBe(123))
+                        .then(() => expect(cache.get('b')).resolves.toBeNull());
         });
     });
 });

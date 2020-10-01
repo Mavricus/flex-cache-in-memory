@@ -1,12 +1,13 @@
 {
   "name": "@flex-cache/in-memory",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "In Memory cache adapter for the Flex Cache",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "jest --config jestconfig.json"
+    "test": "jest --config jestconfig.json",
+    "test:coverage": "jest --config jestconfig.json --collectCoverage true"
   },
   "repository": {
     "type": "git",
