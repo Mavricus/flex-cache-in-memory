@@ -24,7 +24,7 @@ export class FlexInMemoryCache implements IFlexCache {
         return Promise.resolve(data as T);
     }
 
-    set<T>(name: string, data: T, ttl: number): Promise<void> {
+    setForce<T>(name: string, data: T, ttl: number): Promise<void> {
         if (ttl <= 0) {
             return Promise.reject(new Error('TTL must be a positive number'));
         }
@@ -34,8 +34,22 @@ export class FlexInMemoryCache implements IFlexCache {
         }
 
         return this.delete(name)
-            .then(() => {
-                this.storage[name] = newScope;
-            });
+                   .then(() => {
+                       this.storage[name] = newScope;
+                   });
+    }
+
+    set<T>(name: string, data: T, ttl: number): Promise<void> {
+        if (this.storage[name] != null) {
+            return Promise.reject(new Error('Cache already exists'));
+        }
+        return this.setForce(name, data, ttl);
+    }
+
+    update<T>(name: string, data: T, ttl: number): Promise<void> {
+        if (this.storage[name] == null) {
+            return Promise.reject(new Error('Cache does not exist'));
+        }
+        return this.setForce(name, data, ttl);
     }
 }

@@ -1,7 +1,7 @@
 {
   "name": "@flex-cache/in-memory",
-  "version": "2.0.1",
-  "description": "In Memory cache adapter for the Flex Cache",
+  "version": "3.0.0",
+  "description": "In Memory cache adapter for the @flex-cache library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/Mavricus/flex-cache-in-memory#readme",
   "dependencies": {
-    "@flex-cache/types": "^2.0.0"
+    "@flex-cache/types": "^3.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.14",

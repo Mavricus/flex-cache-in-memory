@@ -1,10 +1,12 @@
 import { FlexInMemoryCache } from '../src/FlexInMemoryCache';
 
-jest.useFakeTimers();
-
 describe('InMemoryCache', () => {
     let cache: FlexInMemoryCache;
     let storage: { [key: string]: { timer: NodeJS.Timer; data: unknown } };
+
+    beforeAll(() => {
+        jest.useFakeTimers();
+    });
 
     beforeEach(() => {
         storage = {};
@@ -15,15 +17,26 @@ describe('InMemoryCache', () => {
         jest.runAllTimers();
     });
 
+    afterAll(() => {
+        jest.useRealTimers();
+    });
+
     describe('set', () => {
-        it('should assign to key the value',  () => {
+        it('should assign the value to the key',  () => {
             return cache.set('a', 123, 5000)
                         .then(() => expect(storage['a'].data).toBe(123));
         });
 
-        it('should update the value if it presents',  () => {
+        it('should reject with error if cache already exists',  () => {
             return cache.set('a', 123, 5000)
                         .then(() => expect(storage['a'].data).toBe(123))
+                        .then(() => expect(cache.set('a', 321, 5000)).rejects.toThrowError());
+        });
+
+        it('should re-assign the value to the key after timeout',  () => {
+            return cache.set('a', 123, 5000)
+                        .then(() => expect(storage['a'].data).toBe(123))
+                        .then(() => jest.runAllTimers())
                         .then(() => cache.set('a', 321, 5000))
                         .then(() => expect(storage['a'].data).toBe(321));
         });
@@ -46,7 +59,7 @@ describe('InMemoryCache', () => {
         });
         it('should delete data from the cache by key', () => {
             return Promise.resolve(expect(storage['a']).toBeUndefined())
-                        .then(() => expect(cache.delete('a')).resolves.toBeFalsy());
+                          .then(() => expect(cache.delete('a')).resolves.toBeFalsy());
         });
     });
 
@@ -62,6 +75,58 @@ describe('InMemoryCache', () => {
         });
     });
 
+    describe('setForce', () => {
+        it('should assign the value to the key',  () => {
+            return cache.setForce('a', 123, 5000)
+                        .then(() => expect(storage['a'].data).toBe(123));
+        });
+
+        it('should rewrite cache if already exists',  () => {
+            return cache.setForce('a', 123, 5000)
+                        .then(() => expect(storage['a'].data).toBe(123))
+                        .then(() => cache.setForce('a', 321, 5000))
+                        .then(() => expect(storage['a'].data).toBe(321));
+        });
+
+        it('should re-assign the value to the key after timeout',  () => {
+            return cache.setForce('a', 123, 5000)
+                        .then(() => expect(storage['a'].data).toBe(123))
+                        .then(() => jest.runAllTimers())
+                        .then(() => cache.setForce('a', 321, 5000))
+                        .then(() => expect(storage['a'].data).toBe(321));
+        });
+
+        it('should reject with error when TTL is negative',  () => {
+            return expect(cache.setForce('a', 123, -5000)).rejects.toThrowError();
+        });
+
+        it('should reject with error when TTL is 0',  () => {
+            return expect(cache.setForce('a', 123, 0)).rejects.toThrowError();
+        });
+    });
+
+    describe('setForce', () => {
+        it('should update the cache by key',  () => {
+            return cache.setForce('a', 123, 5000)
+                        .then(() => expect(storage['a'].data).toBe(123))
+                        .then(() => cache.update('a', 321, 5000))
+                        .then(() => expect(storage['a'].data).toBe(321));
+        });
+
+        it('should reject wit an error if cache does not exist',  () => {
+            return expect(cache.get('a')).resolves.toBeNull()
+                        .then(() => expect(cache.update('a', 123, 5000)).rejects.toThrowError());
+        });
+
+        it('should reject with error when TTL is negative',  () => {
+            return expect(cache.update('a', 123, -5000)).rejects.toThrowError();
+        });
+
+        it('should reject with error when TTL is 0',  () => {
+            return expect(cache.update('a', 123, 0)).rejects.toThrowError();
+        });
+    });
+
     describe('timeout', () => {
         it('should delete data on timeout', () => {
             return cache.set('a', 123, 5000)
@@ -73,7 +138,7 @@ describe('InMemoryCache', () => {
             return cache.set('a', 123, 5000)
                         .then(() => expect(cache.get('a')).resolves.toBe(123))
                         .then(() => jest.advanceTimersByTime(3000))
-                        .then(() => cache.set('a', 456, 5000))
+                        .then(() => cache.setForce('a', 456, 5000))
                         .then(() => expect(cache.get('a')).resolves.toBe(456))
                         .then(() => jest.advanceTimersByTime(3000))
                         .then(() => expect(cache.get('a')).resolves.toBe(456))
@@ -110,6 +175,17 @@ describe('InMemoryCache', () => {
                         .then(() => jest.runAllTimers())
                         .then(() => expect(cache.get('a')).resolves.toBe(123))
                         .then(() => expect(cache.get('b')).resolves.toBeNull());
+        });
+        it('should reset timer after update', () => {
+            return cache.set('a', 123, 5000)
+                        .then(() => expect(cache.get('a')).resolves.toBe(123))
+                        .then(() => jest.advanceTimersByTime(3000))
+                        .then(() => cache.update('a', 321, 5000))
+                        .then(() => expect(cache.get('a')).resolves.toBe(321))
+                        .then(() => jest.advanceTimersByTime(3000))
+                        .then(() => expect(cache.get('a')).resolves.toBe(321))
+                        .then(() => jest.advanceTimersByTime(3000))
+                        .then(() => expect(cache.get('a')).resolves.toBeNull());
         });
     });
 });
